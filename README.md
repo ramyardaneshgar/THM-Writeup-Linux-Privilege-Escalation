@@ -1,4 +1,4 @@
-# **TryHackMe Writeup: Linux Privilege Escalation 
+### TryHackMe Writeup: Linux Privilege Escalation 
 ### **By Ramyar Daneshgar**
 
 In this walkthrough, I detail **each attack vector**, explain **why each step is taken**, and discuss **mitigation strategies** to defend against such attacks. 
