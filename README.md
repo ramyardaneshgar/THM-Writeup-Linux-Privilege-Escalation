@@ -216,7 +216,7 @@ nc -lvnp 4444
 
 ---
 
-## *Lessons Learned**
+## Lessons Learned
 1. **Apply kernel patches regularly** to avoid **exploitable vulnerabilities**.
 2. **Remove unnecessary SUID binaries** to prevent **misuse**.
 3. **Restrict sudo access** to **trusted users only**.
