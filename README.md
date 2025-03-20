@@ -1,4 +1,6 @@
 ### TryHackMe Writeup: Linux Privilege Escalation 
+Exploiting enumeration, kernel vulnerabilities, SUID, cron jobs, PATH hijacking, and NFS misconfigurations using LinPEAS, GTFOBins, and ExploitDB 
+
 ### **By Ramyar Daneshgar**
 
 In this walkthrough, I detail **each attack vector**, explain **why each step is taken**, and discuss **mitigation strategies** to defend against such attacks. 
