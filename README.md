@@ -1,8 +1,6 @@
-Here's a **fully detailed** and **comprehensive** write-up for **TryHackMe: Linux Privilege Escalation**, incorporating **cybersecurity terminology, technical depth, and defensive strategies**.
 
----
 
-# **TryHackMe: Linux Privilege Escalation – Detailed Walkthrough**
+# **TryHackMe: Linux Privilege Escalation**
 ## **By Ramyar Daneshgar**
 
 ## **Overview**
