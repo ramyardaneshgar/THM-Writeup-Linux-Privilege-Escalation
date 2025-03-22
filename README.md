@@ -1,11 +1,5 @@
 # **TryHackMe: Linux Privilege Escalation – Complete Walkthrough**
 ### **By: Ramyar Daneshgar**
----
-
-## **Introduction**
-Privilege escalation is a crucial stage in penetration testing and cybersecurity assessments, allowing an attacker to gain elevated access within a system. This process often exploits misconfigurations, vulnerabilities, or weak security controls, leading to a complete system compromise. The **TryHackMe Linux Privilege Escalation lab** simulates real-world attack vectors that security professionals must understand to identify and mitigate risks.  
-
-This walkthrough provides an in-depth technical analysis of various privilege escalation techniques, including **enumeration, kernel exploits, misconfigured sudo permissions, SUID binary exploitation, Linux capabilities manipulation, cron job abuse, PATH variable hijacking, and NFS misconfigurations**. The focus is not only on **executing exploits** but also on **understanding the reasoning behind each step** and how attackers leverage these techniques in real-world engagements.
 
 ---
 
