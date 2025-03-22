@@ -10,7 +10,6 @@ There are two primary forms of privilege escalation:
 - **Vertical Privilege Escalation:** A standard user gains administrative or root access.
 - **Horizontal Privilege Escalation:** A user accesses another user’s account at the same privilege level, often leading to lateral movement within a network.
 
-While these initial tasks do not require any commands, the knowledge gained here is fundamental to the rest of the lab. 
 
 ---
 
