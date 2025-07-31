@@ -1,5 +1,6 @@
-# **TryHackMe: Linux Privilege Escalation – Complete Walkthrough**
-### **By: Ramyar Daneshgar**
+Exploiting enumeration, kernel vulnerabilities, SUID, cron jobs, PATH hijacking, and NFS misconfigurations using LinPEAS, GTFOBins, and ExploitDB.
+
+By Ramyar Daneshgar
 
 ---
 
